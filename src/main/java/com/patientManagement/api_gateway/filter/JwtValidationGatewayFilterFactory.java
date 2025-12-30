@@ -30,9 +30,13 @@ public class JwtValidationGatewayFilterFactory extends AbstractGatewayFilterFact
             return webClient.get()
                     .uri("/validate")
                     .header(HttpHeaders.AUTHORIZATION, bearerToken)
-                    .retrieve()
-                    .toBodilessEntity()
-                    .then(chain.filter(exchange));
+                    .exchangeToMono((response) -> {
+                        if (response.statusCode().is2xxSuccessful()) {
+                            return chain.filter(exchange);
+                        }
+                        exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
+                        return exchange.getResponse().setComplete();
+                    });
         };
     }
 }
