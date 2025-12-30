@@ -31,6 +31,8 @@ spring:
             - StripPrefix=1
             - JwtValidation
 
+authservice:
+  url: http://localhost:8084
 
 server:
   port: 8080
